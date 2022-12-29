@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy
+spec:
+  selector:
+    matchLabels:
+      app: legacy
+  template:
+    metadata:
+      labels:
+        app: legacy
+    spec:
+      containers:
+      - name: legacy
+        image: jesulink2514.docker.io/legacy-api
+        imagePullPolicy: IfNotPresent
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5000
+      - name: ssl-termination
+        image: nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 443
+        volumeMounts:
+          - mountPath: /etc/nginx/ssl
+            name: secret-volume
+          - mountPath: /etc/nginx/conf.d
+            name: configmap-volume
+      volumes:
+        - name: secret-volume
+          secret:
+            secretName: nginx-certs-keys
+        - name: configmap-volume
+          configMap:
+            name: nginxconfigmap
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: legacy-api
+spec:
+  selector:
+    app: legacy
+  ports:
+  - port: 443
+    targetPort: 443
+
