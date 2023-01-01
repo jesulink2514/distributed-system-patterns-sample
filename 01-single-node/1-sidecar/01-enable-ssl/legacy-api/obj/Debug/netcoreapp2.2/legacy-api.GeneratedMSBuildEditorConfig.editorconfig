@@ -1,3 +1,0 @@
-is_global = true
-build_property.RootNamespace = legacy_api
-build_property.ProjectDir = /Volumes/data/Projects/distributed-systems-patterns/01-single-node/1-sidecar/01-enable-ssl/legacy-api/
